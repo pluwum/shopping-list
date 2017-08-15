@@ -1,5 +1,9 @@
 [![Code Climate](https://codeclimate.com/github/codeclimate/codeclimate/badges/gpa.svg)](https://codeclimate.com/github/pluwum/shopping-list)
 
+[![Test Coverage](https://codeclimate.com/github/codeclimate/codeclimate/badges/coverage.svg)](https://codeclimate.com/github/pluwum/shopping-list)
+
+[![Issue Count](https://codeclimate.com/github/codeclimate/codeclimate/badges/issue_count.svg)](https://codeclimate.com/github/pluwum/shopping-list)
+
 # shopping-list App
 The shopping List App is an application that allows users to record and share things they want to spend money on by allowing users to keep track of their shopping lists.
 # FEATURES
