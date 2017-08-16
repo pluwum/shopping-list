@@ -22,23 +22,38 @@ class App():
         self.shopping_lists = {}
 
     def registerUser(self, first_name, last_name, email, password):
+        if email in self.users:
+            return "User already exists"
+
         user = User(first_name, last_name, email, password)
-        self.users[email] = {'first_name': first_name,
-                             'last_name': last_name, 'email': email,
-                             'password': password}
+        self.users[email] = user
         return user
 
     def registerItem(self, name, description):
+
+        if name in self.list_items:
+            return "Item already exists"
+
         item = ListItem(name, description)
-        self.list_items[name] = {'name': name, 'description': description}
+        self.list_items[name] = item
         return item
 
     def createShoppingList(self, name, description, user_id):
         shopping_list = ShoppingList(name, description, user_id)
-        self.shopping_lists[name] = {
-            'name': name, 'user': user_id, 'description': description}
+        self.shopping_lists[name] = shopping_list
         return shopping_list
 
-    def userAddItemToList(self, list_item, shopping_list):
-        shopping_list.addListItem(list_item.name)
+    def userAddItemToList(self, shopping_list, list_item, quantity=None):
+        shopping_list.addListItem(list_item.name, quantity)
         return shopping_list
+
+    def login(self, email, password):
+
+        if email not in self.users:
+            raise Exception("User doesnt exists, Please add")
+        user = self.users[email]
+
+        if user.verifyCredentials(email, password) is False:
+            raise Exception(
+                "Authentication Failed, Please check email and password")
+        return True
