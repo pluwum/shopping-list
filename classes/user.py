@@ -1,5 +1,4 @@
-"""This file contains the User class 
-This class models the generic behaviour 
+"""This file contains the User classThisclassmodels the generic behaviour 
 and attributes of a user in the system
 """
 
