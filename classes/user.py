@@ -1,12 +1,6 @@
-"""User related Actions
-This class contains all actions on the application
-the are 
-    - Registration/signup
-    - Login
-    - Share list
-    - Create list
-    - Delete list
-    - View list
+"""This file contains the User class 
+This class models the generic behaviour 
+and attributes of a user in the system
 """
 
 
@@ -16,4 +10,3 @@ class User():
         self.last_name = last_name
         self.email = email
         self.password = password
-        
