@@ -8,7 +8,6 @@ from classes.app import App
 
 
 class TestRegisterUser(TestCase):
-
     """Handles Test cases for user sign up features"""
 
     def setUp(self):
@@ -16,7 +15,7 @@ class TestRegisterUser(TestCase):
 
     def test_register_successfully(self):
         users_before = len(self.app.users)
-        result = self.app.registerUser(
+        self.app.registerUser(
             'patrick', 'alvin', 'luwyxx@gmail.com', 'psw12345!')
         users_after = len(self.app.users)
 
@@ -33,7 +32,7 @@ class TestCreateItem(TestCase):
 
     def test_creates_item_successfully(self):
         items_before = len(self.app.list_items)
-        result = self.app.registerItem(
+        self.app.registerItem(
             'sugar', 'sweet substance that kills people')
         items_after = len(self.app.list_items)
 
@@ -50,7 +49,7 @@ class TestCreateList(TestCase):
 
     def test_creates_list_successfully(self):
         lists_before = len(self.app.shopping_lists)
-        result = self.app.createShoppingList(
+        self.app.createShoppingList(
             'Back to school', 'school shopping list', 'luwyxx@gmail.com')
         lists_after = len(self.app.shopping_lists)
 
@@ -72,9 +71,26 @@ class TestAddItemToList(TestCase):
 
     def test_adds_item_successfully(self):
         items_before = len(self.shopping_list.list_items)
-        result = self.app.userAddItemToList(self.list_item, self.shopping_list)
+        self.app.userAddItemToList(self.shopping_list, self.list_item, 1)
         items_after = len(self.shopping_list.list_items)
 
         """check that user object creates succesfully
         and number of items increased by items created"""
         self.assertEqual(items_after, items_before + 1)
+
+
+class TestUserLogsIn(TestCase):
+    """ Handles test cases for user login functionality"""
+
+    def setUp(self):
+        self.app = App()
+        self.user = self.app.registerUser(
+            'patrick', 'alvin', 'luwyxx@gmail.com', 'psw12345!')
+
+    def test_user_login_successfully(self):
+        result = self.app.login('luwyxx@gmail.com', 'psw12345!')
+        self.assertTrue(result)
+
+    def test_user_login_fails_with_wrong_email(self):
+        self.assertRaises(Exception, self.app.login,
+                          'luwy@gmail.com', 'psw12345!')
