@@ -3,39 +3,31 @@
 {% block body %}
       <!-- main content goes here !-->
       <div class="page-header">
-            <h1>Example Page Header</h1>
+            <h1> Here's Your Shopping lists </h1>
         </div>
       <div class="row">
             <div class="col-md-12">
                 <table class="table table-striped">
                     <tr>
                         <th>#</th>
-                        <th>Date</th>
                         <th>Name</th>
-                        <th>Amount</th>
+                        <th>Description</th>
                         <th>Actions</th>
                     </tr>
+                    {% for my_list in my_lists %}
+                        {% if my_lists[my_list].user_id == user_id %}
+                            {% set my_list = my_lists[my_list] %}
                     <tr>
-                        <td>1</td>
-                        <td>2017-08-07</td>
-                        <td>Christmas Shopping</td>
-                        <td>300</td>
-                        <td>Share</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-08-07</td>
-                        <td>Grocery Shopping</td>
-                        <td>300</td>
-                        <td>Share</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-08-07</td>
-                        <td>Back to School Shopping</td>
-                        <td>300</td>
-                        <td>Share</td>
-                    </tr>
+                            <td>1</td>
+                            <td>{{ my_list.name }}</td>
+                            <td>{{ my_list.description }}</td>
+                            <td>
+                                <a href="/list/edit/{{ my_list.name }}" class="btn btn-primary">Edit</a>
+                                <a href="/list/delete/{{ my_list.name }}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
                 </table>
             </div>
           </div>

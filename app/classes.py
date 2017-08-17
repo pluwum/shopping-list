@@ -1,5 +1,5 @@
 """App Class
-This file contains the App class c which is the main application class
+Thhe App class is the main application class
 The class handles all actions of a user on the application by leveraging
 other classes
 the are
@@ -8,7 +8,6 @@ the are
     - Share list
     - Create list
     - Delete list
-    - View list
 """
 
 
@@ -42,6 +41,10 @@ class ShoppingListApp():
         self.shopping_lists[name] = shopping_list
         return shopping_list
 
+    def deleteShoppingList(self, name):
+        self.shopping_lists.pop(name, None)
+        return True
+
     def userAddItemToList(self, shopping_list, list_item, quantity=None):
         shopping_list.addListItem(list_item.name, quantity)
         return shopping_list
@@ -58,7 +61,7 @@ class ShoppingListApp():
         return True
 
 
-"""This file contains the User classThisclassmodels the generic behaviour
+"""The User class models the generic behaviour
 and attributes of a user in the system
 """
 
@@ -77,7 +80,7 @@ class User():
         return False
 
 
-"""This file contains the Shopping List class definition
+"""The Shopping List class definition
 This class represents each shopping list and the generic
 attributes it has
 """
@@ -90,6 +93,7 @@ class ShoppingList():
         self.user_id = user_id
         self.list_items = {}
 
+    # Add item to shopping list
     def addListItem(self, list_item, quantity=None):
         if quantity is None:
             quantity = 1
