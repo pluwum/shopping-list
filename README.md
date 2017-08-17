@@ -12,7 +12,7 @@ The shopping List App is an application that allows users to record and share th
  - Users can add, update, view or delete items in a shopping list
 
 # FOLDER STRUCTURE
+  - app: contains all core application logic
+  - tests: contains unit tests for the application logic in the app folder
   - wireframes: Contains a collection of ui design sketches
-  - css: Contains a collection of all cascading style sheets
   - designs: This folder contains all UML class diagrams and documentation
-  - ui: Contains web files that deliver the user interface interaction
