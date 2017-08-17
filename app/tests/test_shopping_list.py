@@ -4,14 +4,14 @@ This file contains test cases used to build the
 shopping list app
 """
 from unittest import TestCase
-from classes.app import App
+from app.classes import ShoppingListApp
 
 
 class TestRegisterUser(TestCase):
     """Handles Test cases for user sign up features"""
 
     def setUp(self):
-        self.app = App()
+        self.app = ShoppingListApp()
 
     def test_register_successfully(self):
         users_before = len(self.app.users)
@@ -28,7 +28,7 @@ class TestCreateItem(TestCase):
     """ Handles test cases for create new item"""
 
     def setUp(self):
-        self.app = App()
+        self.app = ShoppingListApp()
 
     def test_creates_item_successfully(self):
         items_before = len(self.app.list_items)
@@ -45,7 +45,7 @@ class TestCreateList(TestCase):
     """ Handles test cases for create list feature"""
 
     def setUp(self):
-        self.app = App()
+        self.app = ShoppingListApp()
 
     def test_creates_list_successfully(self):
         lists_before = len(self.app.shopping_lists)
@@ -62,7 +62,7 @@ class TestAddItemToList(TestCase):
     """ Handles test case for adding items to shopping list"""
 
     def setUp(self):
-        self.app = App()
+        self.app = ShoppingListApp()
         self.shopping_list = self.app.createShoppingList(
             'Back to school', 'school shopping list', 'luwyxx@gmail.com')
 
@@ -83,7 +83,7 @@ class TestUserLogsIn(TestCase):
     """ Handles test cases for user login functionality"""
 
     def setUp(self):
-        self.app = App()
+        self.app = ShoppingListApp()
         self.user = self.app.registerUser(
             'patrick', 'alvin', 'luwyxx@gmail.com', 'psw12345!')
 
