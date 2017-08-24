@@ -45,14 +45,22 @@
 
     </div>
     <div class="container">
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <ul>
-          {% for message in messages %}
-              <li>{{ message }} </li>
-          {% endfor %}
-          </ul>
-        {% endif %}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+            {% for message in messages %}
+                {% if "Error" not in message[1]: %}
+                    <div class="alert alert-info">
+                    <strong>Success! </strong> {{ message[1] }}
+                    </div>
+                {% endif %}
+
+                {% if "Error" in message[1]: %}
+                    <div class="alert alert-warning">
+                    {{ message[1] }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+          {% endif %}
       {% endwith %}
       <!-- main content goes here !-->
       {% block body %}

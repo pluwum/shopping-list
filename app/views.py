@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template
+from flask import flash, redirect, render_template, request, session
 
 from app import app
 
@@ -8,41 +8,38 @@ from .forms import CreateListForm, LoginForm, RegistrationForm
 # Setup an instance of the shopping list functionality
 shopping_list_app = ShoppingListApp()
 
-# Set Up variable user to track the session
-user = None
-
-# Check if current user has a logged in session
-
 
 def checkIfUserLoggedIn():
-    global user
-    if user is None:
-        return False
-    return True
+    """Returns true if user is logged in, False otherwise"""
+    # Check if current user has a logged in session
+    if "user_email" in session:
+        return True
+    return False
 
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    form = LoginForm()
+    if not checkIfUserLoggedIn():
+        form = LoginForm()
 
-    # Handle login form submission
-    if form.validate_on_submit():
-        try:
-            shopping_list_app.login(form.email.data, form.password.data)
+        # POST: Handle login form submission
+        if form.validate_on_submit():
+            try:
+                shopping_list_app.login(form.email.data, form.password.data)
 
-            # store user's information for this session
-            global user
-            user = shopping_list_app.users[form.email.data]
+                # store user's information for this session
+                user = shopping_list_app.users[form.email.data]
+                session['user_email'] = user.email
+                return redirect('/lists')
+            except Exception as ex:
+                flash('Error: {}\n'.format(ex))
+                return redirect('/')
 
-            return redirect('/lists')
-        except Exception as ex:
-            flash('Error: {}\n'.format(ex))
-            return redirect('/')
-
-    # Show login pages
-    return render_template('login.html',
-                           title='Sign In',
-                           form=form)
+        # GET METHOD: Lets Show login pages
+        return render_template('login.html',
+                               title='Sign In',
+                               form=form)
+    return redirect('/lists')
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -56,8 +53,8 @@ def register():
                                            form.last_name.data,
                                            form.email.data,
                                            form.password.data)
-
-            return redirect('/lists')
+            flash('Your account was created succesfully')
+            return redirect('/')
 
         except Exception as ex:
             flash('Error: {}\n'.format(ex))
@@ -70,12 +67,13 @@ def register():
 
 @app.route("/lists")
 def lists():
-    global user
-
-    # Check if user is logged in
     if checkIfUserLoggedIn():
+        user = session['user_email']
+        user = shopping_list_app.getUserDetail(user)
+        my_lists = shopping_list_app.getUserShoppingLists(user.email)
+        # Check if user is logged in
         return render_template('shopping_lists.html', title='Shopping Lists',
-                               my_lists=shopping_list_app.shopping_lists,
+                               my_lists=my_lists,
                                user_id=user.email)
     # Send user back to login if not
     return redirect('/')
@@ -83,31 +81,32 @@ def lists():
 
 @app.route("/logout")
 def logout():
-    global user
-    user = None
+    session.pop('user_email', None)
+    flash('You been logged out successfully')
     return redirect('/')
 
 
 @app.route("/list/create", methods=['GET', 'POST'])
 def createList():
-    form = CreateListForm()
-    global user
-
-    # Handle login form submission
-    if form.validate_on_submit():
-        try:
-            shopping_list_app.createShoppingList(
-                form.name.data, form.description.data, user.email)
-
-            flash('Yay!: List successfully created')
-            return redirect('/lists')
-
-        except Exception as ex:
-            flash('Error: {}\n'.format(ex))
-            return redirect('/')
-
-    # Show create list page
     if checkIfUserLoggedIn():
+        form = CreateListForm()
+        user = session['user_email']
+        user = shopping_list_app.getUserDetail(user)
+
+        # POST METHOD: Handle login form submission
+        if form.validate_on_submit():
+            try:
+                shopping_list_app.createShoppingList(
+                    form.name.data, form.description.data, user.email)
+
+                flash('Yay!: List successfully created')
+                return redirect('/lists')
+
+            except Exception as ex:
+                flash('Error: {}\n'.format(ex))
+                return redirect('/')
+
+        # GET METHOD: Show create list page
         return render_template('create_list.html',
                                title='Sign In',
                                heading="Create New Shopping List",
@@ -120,59 +119,150 @@ def createList():
     return redirect('/')
 
 
-@app.route("/list/edit/<string:name>")
-def editList(name):
-    form = CreateListForm()
-    shopping_list = shopping_list_app.shopping_lists[name]
-    form.name.data = shopping_list.name
-    form.description.data = shopping_list.description
-
-    # Show create list page
+@app.route("/list/edit/<int:id>")
+def editList(id):
     if checkIfUserLoggedIn():
+        form = CreateListForm()
+        user = session['user_email']
+        shopping_list = shopping_list_app.shopping_lists[user][id]
+        if shopping_list:
+            form.name.data = shopping_list.name
+            form.description.data = shopping_list.description
+
+        # Show create list page
+            if checkIfUserLoggedIn():
+                return render_template('create_list.html',
+                                       title='Edit List',
+                                       heading="Edit New Shopping List",
+                                       btn_txt="Update List",
+                                       form=form,
+                                       action="/list/edit/{}".format(id),
+                                       hide_name=True)
+    # Send user back to login if not
+    return redirect('/')
+
+
+@app.route("/list/edit/<int:id>", methods=['POST'])
+def updateList(id):
+    if checkIfUserLoggedIn():
+        form = CreateListForm()
+        user = session['user_email']
+        user = shopping_list_app.getUserDetail(user)
+        # Recreate list object index with new details
+        try:
+            shopping_list_app.editShoppingList(
+                id, user.email, form.name.data, form.description.data)
+
+            flash('Yay!: List successfully updated')
+            return redirect('/lists')
+
+        except Exception as ex:
+            flash('Error: {}\n'.format(ex))
+            return redirect('/lists')
+    # Send user back to login if not
+    return redirect('/')
+
+
+@app.route("/list/delete/<string:name>", methods=['GET'])
+def deleteList(name):
+    if checkIfUserLoggedIn():
+        form = CreateListForm()
+
+        # Remove list item from dictionary
+        try:
+            shopping_list_app.deleteShoppingList(name)
+
+            flash('Yay!: List successfully deleted')
+            return redirect('/lists')
+
+        except Exception as ex:
+            flash('Error: {}\n'.format(ex))
+            return redirect('/lists')
+
+    # Send user back to login if not
+    return redirect('/')
+
+
+@app.route("/list/<int:shoppinglist_id>")
+def viewListItems(shoppinglist_id):
+    if checkIfUserLoggedIn():
+        user = session['user_email']
+        my_list = shopping_list_app.viewShoppingList(shoppinglist_id, user)
+        my_list_items = my_list.list_items
+
+        return render_template('shopping_list_items.html', title='Shopping "\
+                    "Lists Items',
+                               my_list_items=my_list_items,
+                               list_id=shoppinglist_id,
+                               user_id=user)
+    # Send user back to login
+    return redirect('/')
+
+
+@app.route("/list/<int:shoppinglist_id>/item/create", methods=['POST', 'GET'])
+def addListItem(shoppinglist_id):
+    if checkIfUserLoggedIn():
+        form = CreateListForm()
+        user = session['user_email']
+
+        # POST METHOD: Handle login form submission
+        if form.validate_on_submit():
+            try:
+                mylist = shopping_list_app.viewShoppingList(
+                    shoppinglist_id, user)
+                shopping_list_app.userAddItemToList(mylist, form.name.data,
+                                                    form.description.data)
+
+                flash('Yay!: Item successfully  added to your list')
+                return redirect('/list/{}'.format(shoppinglist_id))
+
+            except Exception as ex:
+                flash('Error: {}\n'.format(ex))
+                return redirect('/')
+
+        # GET METHOD: Show create list page
         return render_template('create_list.html',
-                               title='Edit List',
-                               heading="Edit New Shopping List",
-                               btn_txt="Update List",
+                               title='Add Items',
+                               heading="Add An Item to your List",
+                               btn_txt="Add Item",
                                form=form,
-                               action="/list/edit/" + name,
+                               action="/list/{}/item/create".format(
+                                   shoppinglist_id),
+                               hide_name=False)
+
+
+@app.route("/list/<int:shoppinglist_id>/edit/<int:id>",
+           methods=['POST', 'GET'])
+def editListItem(shoppinglist_id, id):
+    if checkIfUserLoggedIn():
+        form = CreateListForm()
+        user = session['user_email']
+        shopping_list = shopping_list_app.viewShoppingList(
+            shoppinglist_id, user)
+        list_item = shopping_list.getListItem(id)
+
+        if form.validate_on_submit():
+            shopping_list_app.userUpdateItemInList(
+                shopping_list, id, form.name.data, form.description.data)
+            return redirect('/list/{}'.format(shoppinglist_id))
+
+        if list_item:
+            form.name.data = list_item.name
+            form.description.data = list_item.description
+
+        # Show edit item to list page
+        return render_template('create_list.html',
+                               title='Edit List Item',
+                               heading="Edit List Item",
+                               btn_txt="Update Item",
+                               form=form,
+                               action="/list/{}/edit/{}".format(
+                                   shoppinglist_id, id),
                                hide_name=True)
     # Send user back to login if not
     return redirect('/')
 
 
-@app.route("/list/edit/<string:name>", methods=['POST'])
-def updateList(name):
-    form = CreateListForm()
-    global user
-    # Recreate list object index with new details
-    try:
-        shopping_list_app.createShoppingList(
-            name, form.description.data, user.email)
-
-        flash('Yay!: List successfully updated')
-        return redirect('/lists')
-
-    except Exception as ex:
-        flash('Error: {}\n'.format(ex))
-        return redirect('/lists')
-    # Send user back to login if not
-    return redirect('/lists')
-
-
-@app.route("/list/delete/<string:name>", methods=['GET'])
-def deleteList(name):
-    form = CreateListForm()
-
-    # Remove list item from dictionary
-    try:
-        shopping_list_app.deleteShoppingList(name)
-
-        flash('Yay!: List successfully deleted')
-        return redirect('/lists')
-
-    except Exception as ex:
-        flash('Error: {}\n'.format(ex))
-        return redirect('/lists')
-
-    # Send user back to login if not
-    return redirect('/lists')
+@app.errorhandler(404)
+def handleErrors(e):
+    return
