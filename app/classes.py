@@ -25,7 +25,7 @@ class ShoppingListApp():
     def registerUser(self, first_name, last_name, email, password):
         if email in self.users:
             raise Exception(
-                "User already exists, Did you forget password?")
+                "User already exists, Did you forget your password?")
 
         user = User(first_name, last_name, email, password)
         self.users[email] = user
@@ -71,7 +71,10 @@ class ShoppingListApp():
 
             for user_list in users_lists:
                 if user_list.name == name:
-                    raise Exception("Non Existent users are not allowed to created lists:Please register or log in")
+                    raise Exception(
+                        "Non Existent users are not allowed to created lists: "\
+                        "Please register or log in"
+                        )
             users_lists.append(shopping_list)
         else:
             # Create a new list if this is the user's first shopping List
