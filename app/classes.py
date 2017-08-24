@@ -70,10 +70,10 @@ class ShoppingListApp():
             users_lists = self.shopping_lists[user_email]
 
             for user_list in users_lists:
-                if user_list.name == name:
+                if user_list.name.lower() == name.lower():
                     raise Exception(
-                        "Non Existent users are not allowed to created lists: "\
-                        "Please register or log in"
+                        "You already have a list with the same name: "\
+                        "Please perform action again using new list name"
                         )
             users_lists.append(shopping_list)
         else:
@@ -130,9 +130,7 @@ class ShoppingListApp():
                                                description]):
             list_item = ListItem(item_name, description, quantity)
             item_id = shopping_list.addListItem(list_item, quantity)
-            if item_id:
-                return item_id
-            return False
+            return item_id
 
         raise Exception(
             "Oops! Some parameters seem to be missing, please review")
@@ -225,10 +223,11 @@ class ShoppingList():
 
     # Add item to shopping list
     def addListItem(self, list_item, quantity=None):
-        # Check if item already in list
+        # Check if similar item already in list
         for item in self.list_items:
-            if list_item.name == item.name:
-                return False
+            if list_item.name.lower() == item.name.lower():
+                raise Exception("Error:Sorry, Item already exists in your"\
+                                "list, please choose another name")
 
         # When nothing is found, add item to list
         self.list_items.append(list_item)
