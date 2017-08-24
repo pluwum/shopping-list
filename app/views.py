@@ -1,3 +1,6 @@
+"""This file contains logic for all the routes accessible on this Shopping
+ list APP
+"""
 from flask import flash, redirect, render_template, request, session
 
 from app import app
@@ -19,10 +22,12 @@ def checkIfUserLoggedIn():
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
+    """This handles the logic for user login and displaying login page"""
+    # Lets make sure the user isn't already logged in
     if not checkIfUserLoggedIn():
         form = LoginForm()
 
-        # POST: Handle login form submission
+        # POST: Lets Handle the login form submission
         if form.validate_on_submit():
             try:
                 shopping_list_app.login(form.email.data, form.password.data)
@@ -210,10 +215,14 @@ def addListItem(shoppinglist_id):
             try:
                 mylist = shopping_list_app.viewShoppingList(
                     shoppinglist_id, user)
-                shopping_list_app.userAddItemToList(mylist, form.name.data,
+                result = shopping_list_app.userAddItemToList(mylist, form.name.data,
                                                     form.description.data)
-
-                flash('Yay!: Item successfully  added to your list')
+                if result:
+                    flash('Yay!: Item successfully  added to your list')
+                else:
+                    flash(
+                        'Error!: Item Was not added to your list.'\
+                        'Make sure item may already exist in you list')
                 return redirect('/list/{}'.format(shoppinglist_id))
 
             except Exception as ex:
@@ -264,5 +273,5 @@ def editListItem(shoppinglist_id, id):
 
 
 @app.errorhandler(404)
-def handleErrors(e):
-    return
+def page_not_found(e):
+    return render_template('404.html'), 404
