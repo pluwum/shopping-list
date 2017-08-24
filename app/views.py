@@ -168,14 +168,14 @@ def updateList(id):
     return redirect('/')
 
 
-@app.route("/list/delete/<string:name>", methods=['GET'])
-def deleteList(name):
+@app.route("/list/delete/<int:id>", methods=['GET'])
+def deleteList(id):
     if checkIfUserLoggedIn():
-        form = CreateListForm()
+        user_email = session['user_email']
 
         # Remove list item from dictionary
         try:
-            shopping_list_app.deleteShoppingList(name)
+            shopping_list_app.deleteShoppingList(id, user_email)
 
             flash('Yay!: List successfully deleted')
             return redirect('/lists')
@@ -215,19 +215,16 @@ def addListItem(shoppinglist_id):
             try:
                 mylist = shopping_list_app.viewShoppingList(
                     shoppinglist_id, user)
-                result = shopping_list_app.userAddItemToList(mylist, form.name.data,
-                                                    form.description.data)
-                if result:
-                    flash('Yay!: Item successfully  added to your list')
-                else:
-                    flash(
-                        'Error!: Item Was not added to your list.'\
-                        'Make sure item may already exist in you list')
+                result = shopping_list_app.userAddItemToList(
+                    mylist, form.name.data, form.description.data)
+
+                flash('Yay!: Item successfully  added to your list')
+
                 return redirect('/list/{}'.format(shoppinglist_id))
 
             except Exception as ex:
                 flash('Error: {}\n'.format(ex))
-                return redirect('/')
+                return redirect('/list/{}'.format(shoppinglist_id))
 
         # GET METHOD: Show create list page
         return render_template('create_list.html',
@@ -271,6 +268,25 @@ def editListItem(shoppinglist_id, id):
     # Send user back to login if not
     return redirect('/')
 
+@app.route("/list/<int:list_id>/delete/<int:id>", methods=['GET'])
+def deleteListItem(list_id, id):
+    if checkIfUserLoggedIn():
+        user_email = session['user_email']
+
+        # Remove list item from dictionary
+        try:
+            mylist = shopping_list_app.viewShoppingList(list_id, user_email)
+            shopping_list_app.userRemoveItemFromList(mylist, id)
+
+            flash('Yay!: List Item successfully deleted')
+            return redirect('/list/{}'.format(list_id))
+
+        except Exception as ex:
+            flash('Error: {}\n'.format(ex))
+            return redirect('/list/{}'.format(list_id))
+
+    # Send user back to login if not
+    return redirect('/')
 
 @app.errorhandler(404)
 def page_not_found(e):
