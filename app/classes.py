@@ -68,6 +68,10 @@ class ShoppingListApp():
         # Check if user already has a list
         if user_email in self.shopping_lists:
             users_lists = self.shopping_lists[user_email]
+
+            for user_list in users_lists:
+                if user_list.name == name:
+                    raise Exception("Non Existent users are not allowed to created lists:Please register or log in")
             users_lists.append(shopping_list)
         else:
             # Create a new list if this is the user's first shopping List
@@ -123,7 +127,9 @@ class ShoppingListApp():
                                                description]):
             list_item = ListItem(item_name, description, quantity)
             item_id = shopping_list.addListItem(list_item, quantity)
-            return item_id
+            if item_id:
+                return item_id
+            return False
 
         raise Exception(
             "Oops! Some parameters seem to be missing, please review")
@@ -187,13 +193,10 @@ class User():
         return False
 
 
-"""The Shopping List class definition
-This class represents each shopping list and the generic
-attributes it has
-"""
-
-
 class ShoppingList():
+    """The Shopping List class definition
+    This class represents each shopping list and the generic attributes it has
+    """
     def __init__(self, name, description, user_id):
         self.id = None
         self.name = name
@@ -219,6 +222,12 @@ class ShoppingList():
 
     # Add item to shopping list
     def addListItem(self, list_item, quantity=None):
+        # Check if item already in list
+        for item in self.list_items:
+            if list_item.name == item.name:
+                return False
+
+        # When nothing is found, add item to list
         self.list_items.append(list_item)
         # Lets return the item's index to use as an ID
         return len(self.list_items) - 1
@@ -253,13 +262,10 @@ class ShoppingList():
         return False
 
 
-"""This file contains the ListItem class
-This class models the attirbutes and behaviours
- of an individual list item
-"""
-
-
 class ListItem():
+    """This file contains the ListItem class This class models the attirbutes
+     and behaviours of an individual list item
+    """
     def __init__(self, name, description, quantity=None):
         self.name = name
         self.description = description
