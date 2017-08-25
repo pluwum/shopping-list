@@ -5,30 +5,37 @@
       <div class="page-header">
             <h1> Here's Your Shopping lists items </h1>
         </div>
-        <a href="/list/{{list_id}}/item/create" class="btn btn-info">Add Item</a>
+        {% if my_list_items|length > 0 %}
+            <a href="/list/{{list_id}}/item/create" class="btn btn-info">Add Item</a>
+        {% endif %}
       <div class="row">
             <div class="col-md-12">
-
-                <table class="table table-striped">
-                    <tr>
-                        <th>#</th>
-                        <th>Item Name</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
-                    {% for item in my_list_items %}
-                    <tr>
-                            <td>{{ loop.index}}</td>
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.description }} </td>
-                            <td>
-                                <a href="/list/{{list_id}}/edit/{{loop.index0}}" class="btn btn-info">Edit</a>
-                                <a href="/list/{{list_id}}/delete/{{loop.index0}}"  class="btn btn-danger">Delete</a>
-                            </td>
+                {% if my_list_items|length > 0 %}
+                    <table class="table table-striped">
+                        <tr>
+                            <th>#</th>
+                            <th>Item Name</th>
+                            <th>Description</th>
+                            <th>Actions</th>
                         </tr>
+                        {% for item in my_list_items %}
+                        <tr>
+                                <td>{{ loop.index}}</td>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.description }} </td>
+                                <td>
+                                    <a href="/list/{{list_id}}/edit/{{loop.index0}}" class="btn btn-info">Edit</a>
+                                    <a href="/list/{{list_id}}/delete/{{loop.index0}}"  class="btn btn-danger">Delete</a>
+                                </td>
+                            </tr>
 
-                    {% endfor %}
-                </table>
+                        {% endfor %}
+                    </table>
+                 {% else %}
+                    <div class="alert alert-success">
+                        <strong>Opps! </strong> You have no Items in your list at the moment :-(. To create one, click <a href="/list/{{list_id}}/item/create">here</a>
+                    </div>
+                {% endif %}
             </div>
           </div>
           {% endblock %}

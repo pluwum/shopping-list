@@ -8,21 +8,21 @@
 
                   <form action="/register" method="post" class="form-horizontal">
                       <div class="form-group">
-                          {{ form.first_name(class="form-control", placeholder="First Name", required=True) }}
+                          {{ form.first_name(maxlength="40", class="form-control", placeholder="First Name", required=True) }}
                         </div>
 
                         <div class="form-group">
-                            {{ form.last_name(class="form-control", placeholder="Last Name", required=True) }}
+                            {{ form.last_name(maxlength="40", class="form-control", placeholder="Last Name", required=True) }}
                         </div>
 
                       <div class="form-group">
-                          {{ form.email(class="form-control", placeholder="Email", required=True) }}
+                          {{ form.email(maxlength="40", type="email", class="form-control", placeholder="Email", required=True) }}
                       </div>
                         <div class="form-group">
-                            {{ form.password(class="form-control", placeholder="Password", required=True) }}
+                            {{ form.password(minlength="6", maxlength="30", class="form-control", placeholder="Password", required=True) }}
                         </div>
                         <div class="form-group">
-                            {{ form.repassword(class="form-control", placeholder="Confirm Password", required=True) }}
+                            {{ form.repassword(minlength="6", maxlength="30", class="form-control", placeholder="Confirm Password", required=True) }}
                         </div>
                       <div class="form-group">
                         <button class="btn btn-info"/>Sign Up</button>
