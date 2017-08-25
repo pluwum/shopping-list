@@ -68,7 +68,9 @@ The application can be found by entering the following url in your browser
 http://127.0.0.1:5000/
 
 ```
+## Demo Version
 
+A Demo version of this simple App can be accessed [HERE](https://pacific-wave-55880.herokuapp.com/)
 ## Contributors
 
 This project is maintained by  [Patrick Luwum](https://twitter.com/luwyx)
