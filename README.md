@@ -5,27 +5,27 @@
 # Shopping-List App
 The shopping List App is an application that allows users to record and share things they want to spend money on by allowing users to keep track of their shopping lists.
 
-# FEATURES
+## FEATURES
  - Users create accounts
  - Users can log in
  - Users create, view, update and delete shopping lists.
  - Users can add, update, view or delete items in a shopping list
 
-# FOLDER STRUCTURE
+## FOLDER STRUCTURE
   - app: contains all core application logic
   - tests: contains unit tests for the application logic in the app folder
   - wireframes: Contains a collection of ui design sketches
   - designs: This folder contains all UML class diagrams and documentation
 
-# Motivation
+## Motivation
 
 This project is part of a submission for week two of Andela BootCamp UG CH3 2017. All the features available are developed as specified by the assignment
 
-  ### ** Python Version **
+## Python Version
 
 Python 3.6.1
 
-## ** Installation **
+## Installation
 
 #### Step 1
 Install a  virtual environment
@@ -69,6 +69,6 @@ http://127.0.0.1:5000/
 
 ```
 
-## Contributers
+## Contributors
 
 This project is maintained by  [Patrick Luwum](https://twitter.com/luwyx)
